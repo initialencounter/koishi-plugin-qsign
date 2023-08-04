@@ -1,20 +1,30 @@
 {
   "name": "koishi-plugin-qsign",
   "description": "go-cqhttp-dev 安装器",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "files": [
     "lib",
-    "dist"
+    "install.js"
   ],
   "author": {
     "name": "initencounter",
     "email": "2911583893@qq.com",
     "url": "https://github.com/initialencounter"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/initialencounter/koishi-plugin-qsign.git"
+  },
+  "bugs": {
+    "url": "https://github.com/initialencounter/koishi-plugin-qsign/issues"
+  },
+  "homepage": "https://github.com/initialencounter/koishi-plugin-qsign",
   "license": "AGPL-3",
-  "scripts": {},
+  "scripts": {
+    "postinstall": "node install"
+  },
   "keywords": [
     "chatbot",
     "koishi",
