@@ -1,5 +1,5 @@
 import { Context, Schema, Logger } from 'koishi'
-import { createWriteStream } from 'fs'
+import { createWriteStream, createReadStream } from 'fs'
 import { existsSync, promises as fs } from 'fs'
 import { mkdir } from 'fs/promises'
 import AdmZip from 'adm-zip'
@@ -8,6 +8,7 @@ import env from 'env-paths'
 import { resolve } from 'path'
 import { spawn, SpawnOptions } from 'child_process'
 import { extract } from 'tar'
+import zlib from 'zlib'
 
 export const name = 'qsign'
 export const logger = new Logger(name)
@@ -26,6 +27,13 @@ export async function apply(ctx: Context, config: Config) {
     const platform = getPlatform(process.platform)
     const arch = getArch(process.arch)
     await downloadRelease(platform, arch, config.version)
+    if (platform !== "windows") {
+      fs.chmod(binary, '755').then(stat => {
+        logger.info(stat)
+      }).catch(e => {
+        logger.error(e)
+      })
+    }
   }
   logger.info('环境准备就绪！')
 
@@ -56,36 +64,37 @@ export function getEnvPath(version: string) {
 }
 
 export async function downloadRelease(platform: string, arch: string, version: string) {
-  // https://gitee.com/initencunter/go-cqhttp-dev/releases/download/v1.1.1-dev/go-cqhttp-windows-amd64.zip
+  // https://gitee.com/initencunter/go-cqhttp-dev/releases/download/v1.1.1-dev/go-cqhttp-windows-amd64.zip 
   const filename = `go-cqhttp-${platform}-${arch}.${(getPlatform() === "windows" ? "zip" : "tar.gz")}`
+  // const filename = 'go-cqhttp-linux-arm64.tar.gz'
+
   const url = `https://gitee.com/initencunter/go-cqhttp-dev/releases/download/${version}/${filename}`
 
   logger.info(`正在安装 go-cqhttp ${url}`)
+
+  const gocqpath = resolve(env('gocqhttp').data)
+  const gocqpath2 = resolve(gocqpath, version)
+  logger.info(gocqpath)
+
   const [{ data: stream }] = await Promise.all([
     axios.get<NodeJS.ReadableStream>(url, { responseType: 'stream' }),
+    await mkdir(gocqpath2, { recursive: true }),
   ])
   return new Promise<void>(async (resolved, reject) => {
     stream.on('end', resolved)
     stream.on('error', reject)
-    const gocqpath = resolve(env('gocqhttp').data)
-    const gocqpath2 = resolve(gocqpath, version)
-    await mkdir(gocqpath2, { recursive: true })
-    logger.info(gocqpath)
+
     // windows
     if (filename.endsWith('.zip')) {
-      const gocqpath2 = resolve(gocqpath, version)
-      await mkdir(gocqpath2, { recursive: true }),
-        stream.pipe(createWriteStream(resolve(gocqpath2, 'go-cqhttp.zip'))).on("finish", () => {
-          const adm = new AdmZip(resolve(gocqpath2, 'go-cqhttp.zip'))
-          adm.extractAllTo(gocqpath2, true)
-        }).on("error", (err) => {
-          reject(err)
-        })
+      stream.pipe(createWriteStream(resolve(gocqpath2, 'go-cqhttp.zip'))).on("finish", () => {
+        const adm = new AdmZip(resolve(gocqpath2, 'go-cqhttp.zip'))
+        adm.extractAllTo(gocqpath2, true)
+      }).on("error", (err) => {
+        reject(err)
+      })
     } else {
-      stream.pipe(extract({ gocqpath2, newer: true }, ['go-cqhttp']))
-      const cmd = `chmod x+ ${resolve(gocqpath2, 'go-cqhttp')}`
-      logger.info(cmd)
-      spawn(cmd)
+      stream.pipe(zlib.createGunzip())
+        .pipe(extract({ cwd: gocqpath2 }))
     }
 
   })
