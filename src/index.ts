@@ -19,7 +19,7 @@ export const Config: Schema<Config> = Schema.object({
   version: Schema.string().description('版本选择').default('v1.1.1-dev'),
 })
 
-export async function apply(ctx:Context, config: Config) {
+export async function apply(ctx: Context, config: Config) {
   const basename = `go-cqhttp${process.platform === 'win32' ? '.exe' : ''}`
   const binary = resolve(env('gocqhttp').data, config.version, basename)
   if (!existsSync(binary)) {
@@ -68,20 +68,22 @@ export async function downloadRelease(platform: string, arch: string, version: s
     stream.on('end', resolved)
     stream.on('error', reject)
     const gocqpath = resolve(env('gocqhttp').data)
+    const gocqpath2 = resolve(gocqpath, version)
+    await mkdir(gocqpath2, { recursive: true })
     logger.info(gocqpath)
     // windows
     if (filename.endsWith('.zip')) {
-      const gocqpath2 = resolve(gocqpath,version)
+      const gocqpath2 = resolve(gocqpath, version)
       await mkdir(gocqpath2, { recursive: true }),
-      stream.pipe(createWriteStream(resolve(gocqpath2,'go-cqhttp.zip'))).on("finish",()=>{
-        const adm = new AdmZip(resolve(gocqpath2,'go-cqhttp.zip'))
-        adm.extractAllTo(gocqpath2,true)
-      }).on("error",(err)=>{
-        reject(err)
-      })    
+        stream.pipe(createWriteStream(resolve(gocqpath2, 'go-cqhttp.zip'))).on("finish", () => {
+          const adm = new AdmZip(resolve(gocqpath2, 'go-cqhttp.zip'))
+          adm.extractAllTo(gocqpath2, true)
+        }).on("error", (err) => {
+          reject(err)
+        })
     } else {
-      stream.pipe(extract({ gocqpath , newer: true }, ['go-cqhttp']))
-      const cmd = `chmod x+ ${resolve(gocqpath,'go-cqhttp')}`
+      stream.pipe(extract({ gocqpath2, newer: true }, ['go-cqhttp']))
+      const cmd = `chmod x+ ${resolve(gocqpath2, 'go-cqhttp')}`
       logger.info(cmd)
       spawn(cmd)
     }
