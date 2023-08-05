@@ -72,6 +72,7 @@ export function getPlatform(platform: string = process.platform) {
     case 'darwin': return 'darwin'
     case 'linux': return 'linux'
     case 'win32': return 'windows'
+    case 'android': return 'linux'
   }
   throw new Error(`Unsupported platform: ${platform}`)
 }
