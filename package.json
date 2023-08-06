@@ -1,7 +1,7 @@
 {
   "name": "koishi-plugin-qsign",
   "description": "go-cqhttp-dev 安装器",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "files": [
@@ -35,8 +35,8 @@
   },
   "koishi": {
     "description": {
-      "zh": "[go-cqhttp](https://github.com/1umine/go-cqhttp) 安装器",
-      "en": "[go-cqhttp](https://github.com/1umine/go-cqhttp) installer"
+      "zh": "[go-cqhttp-dev](https://github.com/rhwong/go-cqhttp-dev) 安装器, 并非 qsign 安装器",
+      "en": "[go-cqhttp-dev](https://github.com/rhwong/go-cqhttp-dev) installer not qsign"
     },
     "service": {
       "optional": [

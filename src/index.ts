@@ -13,10 +13,12 @@ import zlib from 'zlib'
 export const name = 'qsign'
 export const logger = new Logger(name)
 export interface Config {
+  source: string
   version: string
 }
 export const Config: Schema<Config> = Schema.object({
   version: Schema.string().description('版本选择').default('v1.1.1-dev'),
+  source: Schema.string().default("https://gitee.com/initencunter/go-cqhttp-dev/releases/download").description("下载源")
 })
 
 export const usage = `
@@ -33,6 +35,8 @@ export const usage = `
 
 本插件抄自[node-gocqhttp](https://github.com/koishijs/node-gocqhttp)
 
+部署 SignServer [点我](https://github.com/fuqiuluo/unidbg-fetch-qsign/wiki)
+
 ## 问题反馈
 * QQ群：399899914<br>
 * 小伙伴如果遇到问题或者有新的想法，欢迎到[这里](https://github.com/initialencounter/koishi-plugin-qsign/issues)反馈哦~
@@ -44,7 +48,7 @@ export async function apply(ctx: Context, config: Config) {
   if (!existsSync(binary)) {
     const platform = getPlatform(process.platform)
     const arch = getArch(process.arch)
-    await downloadRelease(platform, arch, config.version)
+    await downloadRelease(platform, arch, config.version,config.source)
     if (platform !== "windows") {
       fs.chmod(binary, '755').then(stat => {
         logger.info(stat)
@@ -82,12 +86,10 @@ export function getEnvPath(version: string) {
   return resolve(env('gocqhttp').data, version, basename)
 }
 
-export async function downloadRelease(platform: string, arch: string, version: string) {
-  // https://gitee.com/initencunter/go-cqhttp-dev/releases/download/v1.1.1-dev/go-cqhttp-windows-amd64.zip 
+export async function downloadRelease(platform: string, arch: string, version: string, source:string) {
   const filename = `go-cqhttp-${platform}-${arch}.${(getPlatform() === "windows" ? "zip" : "tar.gz")}`
-  // const filename = 'go-cqhttp-linux-arm64.tar.gz'
 
-  const url = `https://gitee.com/initencunter/go-cqhttp-dev/releases/download/${version}/${filename}`
+  const url = `${source}/${version}/${filename}`
 
   logger.info(`正在安装 go-cqhttp ${url}`)
 
