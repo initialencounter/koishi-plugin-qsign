@@ -10,7 +10,7 @@ import { spawn, SpawnOptions } from 'child_process'
 import { extract } from 'tar'
 import zlib from 'zlib'
 
-export const name = 'qsign'
+export const name = 'gocqhttp-dev'
 export const logger = new Logger(name)
 export interface Config {
   source: string
