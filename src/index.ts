@@ -16,8 +16,9 @@ export interface Config {
   source: string
   version: string
 }
+
 export const Config: Schema<Config> = Schema.object({
-  version: Schema.string().description('版本选择').default('v1.1.1-dev'),
+  version: Schema.string().description('版本选择').default('v1.1.1-dev-d85d697'),
   source: Schema.string().default("https://gitee.com/initencunter/go-cqhttp-dev/releases/download").description("下载源")
 })
 
