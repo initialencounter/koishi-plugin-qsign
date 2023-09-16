@@ -1,5 +1,5 @@
 import { Context, Schema, Logger } from 'koishi'
-import { createWriteStream, createReadStream } from 'fs'
+import { createWriteStream, unlinkSync } from 'fs'
 import { existsSync, promises as fs } from 'fs'
 import { mkdir } from 'fs/promises'
 import AdmZip from 'adm-zip'
@@ -18,7 +18,10 @@ export interface Config {
 }
 
 export const Config: Schema<Config> = Schema.object({
-  version: Schema.string().description('版本选择').default('v1.1.1-dev-d85d697'),
+  version: Schema.union([
+    Schema.const('v1.1.1-dev-f16d72f' as string).description("v1.1.1-dev-f16d72f,发行日期2023-08-31"),
+    Schema.const('v1.1.1-dev-d85d697' as string).description("v1.1.1-dev-d85d697, 发行日期2023-08-29"),
+  ]).default('v1.1.1-dev-f16d72f').description('版本选择'),
   source: Schema.string().default("https://gitee.com/initencunter/go-cqhttp-dev/releases/download").description("下载源")
 })
 
@@ -49,7 +52,7 @@ export async function apply(ctx: Context, config: Config) {
   if (!existsSync(binary)) {
     const platform = getPlatform(process.platform)
     const arch = getArch(process.arch)
-    await downloadRelease(platform, arch, config.version,config.source)
+    await downloadRelease(platform, arch, config.version, config.source)
     if (platform !== "windows") {
       fs.chmod(binary, '755').then(stat => {
         logger.info(stat)
@@ -87,7 +90,7 @@ export function getEnvPath(version: string) {
   return resolve(env('gocqhttp').data, version, basename)
 }
 
-export async function downloadRelease(platform: string, arch: string, version: string, source:string) {
+export async function downloadRelease(platform: string, arch: string, version: string, source: string) {
   const filename = `go-cqhttp-${platform}-${arch}.${(getPlatform() === "windows" ? "zip" : "tar.gz")}`
 
   const url = `${source}/${version}/${filename}`
@@ -113,6 +116,8 @@ export async function downloadRelease(platform: string, arch: string, version: s
         adm.extractAllTo(gocqpath2, true)
       }).on("error", (err) => {
         reject(err)
+      }).on("finish",()=>{
+        unlinkSync('go-cqhttp.zip')
       })
     } else {
       stream.pipe(zlib.createGunzip())
