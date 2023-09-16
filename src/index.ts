@@ -1,6 +1,5 @@
 import { Context, Schema, Logger } from 'koishi'
-import { createWriteStream, unlinkSync } from 'fs'
-import { existsSync, promises as fs } from 'fs'
+import { createWriteStream, unlinkSync, existsSync, promises as fs  } from 'fs'
 import { mkdir } from 'fs/promises'
 import AdmZip from 'adm-zip'
 import axios from 'axios'
