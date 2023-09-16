@@ -1,7 +1,7 @@
 {
   "name": "koishi-plugin-qsign",
   "description": "go-cqhttp-dev 安装器",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "files": [
@@ -50,8 +50,5 @@
     "env-paths": "^2.2.1",
     "tar": "^6.1.15",
     "zlib": "^1.0.5"
-  },
-  "devDependencies": {
-    "@types/tar": "^6.1.5"
   }
 }

@@ -32,7 +32,7 @@ export const usage = `
 [![npm](https://img.shields.io/npm/v/koishi-plugin-qsign?style=flat-square)](https://www.npmjs.com/package/koishi-plugin-qsign)
 
 
-启用即可自动安装 [gocqhttp-dev](https://github.com/Mrs4s/go-cqhttp/tree/dev)
+启用即可自动安装 [go-cqhttp-dev](https://github.com/rhwong/go-cqhttp-dev)
 
 专属启动器 koishi-plugin-gocqhttp-dev
 
