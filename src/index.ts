@@ -13,13 +13,16 @@ export const name = 'gocqhttp-dev'
 export const logger = new Logger(name)
 export interface Config {
   source: string
-  version: string
+  version_gocq: string
 }
 
+export const version_gocq_default = 'v1.1.1-dev-f16d72f'
+
+
 export const Config: Schema<Config> = Schema.object({
-  version: Schema.union([
+  version_gocq: Schema.union([
     Schema.const('v1.1.1-dev-f16d72f' as string).description("v1.1.1-dev-f16d72f,发行日期2023-08-31"),
-  ]).default('v1.1.1-dev-f16d72f').description('版本选择'),
+  ]).default(version_gocq_default).description('版本选择'),
   source: Schema.string().default("https://gitee.com/initencunter/go-cqhttp-dev/releases/download").description("下载源")
 })
 
@@ -29,11 +32,9 @@ export const usage = `
 [![npm](https://img.shields.io/npm/v/koishi-plugin-qsign?style=flat-square)](https://www.npmjs.com/package/koishi-plugin-qsign)
 
 
-启用即可自动安装 [go-cqhttp-dev](https://github.com/rhwong/go-cqhttp-dev)
+启用即可自动安装 [gocqhttp-dev](https://github.com/Mrs4s/go-cqhttp/tree/dev)
 
 专属启动器 koishi-plugin-gocqhttp-dev
-
-由于 go-cqhttp-dev 的 [releases](https://github.com/rhwong/go-cqhttp-dev/releases/tag/v1.1.1-dev) 中不存在 darwin, 目前只支持 windows 和 linux 平台
 
 本插件抄自[node-gocqhttp](https://github.com/koishijs/node-gocqhttp)
 
@@ -46,11 +47,11 @@ export const usage = `
 
 export async function apply(ctx: Context, config: Config) {
   const basename = `go-cqhttp${process.platform === 'win32' ? '.exe' : ''}`
-  const binary = resolve(env('gocqhttp').data, config.version, basename)
+  const binary = resolve(env('gocqhttp').data, config.version_gocq, basename)
   if (!existsSync(binary)) {
     const platform = getPlatform(process.platform)
     const arch = getArch(process.arch)
-    await downloadRelease(platform, arch, config.version, config.source)
+    await downloadRelease(platform, arch, config.version_gocq, config.source)
     if (platform !== "windows") {
       fs.chmod(binary, '755').then(stat => {
         logger.info(stat)
@@ -115,7 +116,7 @@ export async function downloadRelease(platform: string, arch: string, version: s
       }).on("error", (err) => {
         reject(err)
       }).on("finish",()=>{
-        unlinkSync('go-cqhttp.zip')
+        unlinkSync(resolve(gocqpath2, 'go-cqhttp.zip'))
       })
     } else {
       stream.pipe(zlib.createGunzip())

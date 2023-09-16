@@ -1,3 +1,3 @@
-const { apply } = require('./lib/index')
+const { apply, version_gocq_default } = require('./lib/index')
 const { Context } = require('koishi')
-apply(new Context(),{version:"v1.1.1-dev-f16d72f",source:"https://gitee.com/initencunter/go-cqhttp-dev/releases/download"})
+apply(new Context(), { version: version_gocq_default, source: "https://gitee.com/initencunter/go-cqhttp-dev/releases/download" })
