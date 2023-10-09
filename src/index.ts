@@ -16,12 +16,13 @@ export interface Config {
   version_gocq: string
 }
 
-export const version_gocq_default = 'v1.1.1-dev-f16d72f'
+export const version_gocq_default = 'v1.1.1-dev-6ac7a8f'
 
 
 export const Config: Schema<Config> = Schema.object({
   version_gocq: Schema.union([
     Schema.const('v1.1.1-dev-f16d72f' as string).description("v1.1.1-dev-f16d72f,发行日期2023-08-31"),
+    Schema.const('v1.1.1-dev-6ac7a8f'as string).description("v1.1.1-dev-f16d72f,发行日期2023-10-09"),
   ]).default(version_gocq_default).description('版本选择'),
   source: Schema.string().default("https://gitee.com/initencunter/go-cqhttp-dev/releases/download").description("下载源")
 })
@@ -54,7 +55,7 @@ export async function apply(ctx: Context, config: Config) {
     await downloadRelease(platform, arch, config.version_gocq, config.source)
     if (platform !== "windows") {
       fs.chmod(binary, '755').then(stat => {
-        logger.info(stat)
+        logger.info("chomd 755")
       }).catch(e => {
         logger.error(e)
       })

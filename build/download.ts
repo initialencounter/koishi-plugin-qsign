@@ -12,7 +12,7 @@ type ArtifactResult = operations['actions/list-workflow-run-artifacts']['respons
 const downTist = [
     ['darwin', 'amd64'],
     ['darwin', 'arm64'],
-    // ['linux', 'amd64'],
+    ['linux', 'amd64'],
     ['linux', 'arm64'],
     //   ['linux', 'arm'],
     //   ['linux', '386'],
@@ -54,9 +54,9 @@ async function downloadArtifact(cwd: string, platform: string, arch: string) {
     const extension = platform === 'windows' ? '.exe' : ''
     const entry = adm.getEntry(`go-cqhttp_${platform}_${arch}${extension}`)
     if (platform === 'windows') {
-        await compressZip(`go-cqhttp-${platform}-${arch}.zip`, entry!.getData())
+        await compressZip(`${cwd}/go-cqhttp-${platform}-${arch}.zip`, entry!.getData())
     } else {
-        await compressTar(`go-cqhttp-${platform}-${arch}.tar.gz`, entry!.getData())
+        await compressTar(`${cwd}/go-cqhttp-${platform}-${arch}.tar.gz`, entry!.getData())
     }
 }
 async function compressZip(filename: string, bufferData: Buffer) {
@@ -73,7 +73,6 @@ async function compressTar(filename: string, bufferData: Buffer) {
     const gzStream = createWriteStream(filename);
     tarStream.pipe(zlib.createGzip()).pipe(gzStream);
     gzStream.on('finish', () => {
-        console.log('压缩完成。');
         // 可选：删除临时文件
         unlinkSync('go-cqhttp');
     });
@@ -81,14 +80,15 @@ async function compressTar(filename: string, bufferData: Buffer) {
 
 
 // 调用示例
-export const runId: number = 6036458147
+export const runId: number = 6457031884
+const version = 'v1.1.1-dev-6ac7a8f'
+mkdir(version)
 
 async function main(){
 for (var i of downTist) {
-    const version = 'v1.1.1-dev-f16d72f'
     let platform_const = i[0]
     let arch_const = i[1]
-    await downloadArtifact('./', platform_const, arch_const)
+    await downloadArtifact(`./${version}`, platform_const, arch_const)
 
 }}
 main()
