@@ -22,7 +22,7 @@ export const version_gocq_default = 'v1.1.1-dev-6ac7a8f'
 export const Config: Schema<Config> = Schema.object({
   version_gocq: Schema.union([
     Schema.const('v1.1.1-dev-f16d72f' as string).description("v1.1.1-dev-f16d72f,发行日期2023-08-31"),
-    Schema.const('v1.1.1-dev-6ac7a8f'as string).description("v1.1.1-dev-f16d72f,发行日期2023-10-09"),
+    Schema.const('v1.1.1-dev-6ac7a8f'as string).description("v1.1.1-dev-6ac7a8f,发行日期2023-10-09"),
   ]).default(version_gocq_default).description('版本选择'),
   source: Schema.string().default("https://gitee.com/initencunter/go-cqhttp-dev/releases/download").description("下载源")
 })
